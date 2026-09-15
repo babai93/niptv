@@ -66,7 +66,11 @@ const HTML_UI = `
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>IPTV Web Player</title>
+    <title>NIPTV Web Player</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Encode+Sans+Condensed:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -98,7 +102,7 @@ const HTML_UI = `
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" class="text-blue-500 flex-shrink-0">
                 <path fill="currentColor" d="M64 64C28.7 64 0 92.7 0 128L0 352c0 35.3 28.7 64 64 64l112 0-10.7 32L128 448c-17.7 0-32 14.3-32 32s14.3 32 32 32l256 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-37.3 0L336 416l112 0c35.3 0 64-28.7 64-64l0-224c0-35.3-28.7-64-64-64L64 64zm0 64l384 0 0 224L64 288l0-160z"/>
             </svg>
-            <span>IPTV Player</span>
+            <span>NIPTV Player</span>
         </div>
         <button type="button" id="openSidebarBtn" class="p-2.5 rounded-xl bg-slate-800 active:bg-slate-700" aria-label="Browse channels">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="18" height="18">
