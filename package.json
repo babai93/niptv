@@ -12,3 +12,10 @@
     "express": "^5.2.1"
   }
 }
+{
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  }
+}
