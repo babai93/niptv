@@ -12,7 +12,7 @@
   "keywords": [],
   "type": "commonjs",
   "dependencies": {
-    "@vercel/speed-insights": "^5.2.1",
+    "@vercel/speed-insights": "^2.0.0",
     "express": "^5.2.1"
   }
 }
