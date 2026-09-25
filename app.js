@@ -70,6 +70,7 @@ const HTML_UI = `
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.css" integrity="sha512-x9WwyMYBnlXMNQ6kQ/Lyzu1NqIhLQKL5Oq6xByfXuRj7s9CskyCbLv/1IjqzJmXwFXWr0ov6jBV7Qbc0hh9nHg==" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="manifest" href="/site.webmanifest">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -80,18 +81,26 @@ const HTML_UI = `
     <style>
         :root { --player-aspect-ratio: 16 / 9; }
         html, body { height: 100%; }
-        body {
-            font-family: 'Encode Sans Condensed', sans-serif;
-            overscroll-behavior: none;
-        }
+        body { font-family: 'Encode Sans Condensed', sans-serif; overscroll-behavior: none; }
         button, input, select, textarea { font: inherit; }
-
         /* Slim scrollbars for the channel list */
         .thin-scroll::-webkit-scrollbar { width: 6px; }
         .thin-scroll::-webkit-scrollbar-track { background: transparent; }
         .thin-scroll::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 999px; }
-
         .shaka-video-container { aspect-ratio: var(--player-aspect-ratio, 16 / 9); }
+        #menu-toggle { display: none; }
+        .menu-btn { position: fixed; top: 22px; right: 22px; z-index: 50; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background-color: rgba(30, 41, 59, 0.4); border-radius: 12px; cursor: pointer; transition: background-color 0.3s ease-in-out; opacity: 0.5; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);}
+        .menu-btn:hover { background-color: rgba(51, 65, 85, 0.6); opacity: 1; }
+        .menu-btn i { position: absolute; font-size: 18px; color: #f8fafc; transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out; }
+        .menu-btn .fa-bars { transform: rotate(0deg); opacity: 0; }
+        .menu-btn .fa-xmark { transform: rotate(90deg); opacity: 1; }
+        #menu-toggle:checked ~ #sidebar { display: none; }
+        #menu-toggle:checked + .menu-btn .fa-xmark { transform: rotate(0deg); opacity: 0; }
+        #menu-toggle:checked + .menu-btn .fa-bars { transform: rotate(0deg); opacity: 1; }
+        @media (max-width: 768px) { #menu-toggle, .menu-btn { display: none; }}
+        .shaka-video-container.aspect-16-9 video { aspect-ratio: 16 / 9; width: 100%; height: auto; }
+        .shaka-video-container.aspect-fill video { width: 100%; height: 100%; object-fit: cover; }
+
     </style>
 </head>
 <body class="h-dvh w-full flex flex-col md:flex-row bg-slate-950 text-slate-50 overflow-hidden">
@@ -113,6 +122,13 @@ const HTML_UI = `
 
     <!-- Sidebar backdrop (mobile only) -->
     <div id="sidebarBackdrop" class="fixed inset-0 bg-black/60 z-30 opacity-0 pointer-events-none transition-opacity duration-300 md:hidden"></div>
+
+    <!-- Sidebar toggle -->
+    <input type="checkbox" id="menu-toggle"> 
+    <label for="menu-toggle" class="menu-btn">
+        <i class="fa-solid fa-bars"></i>
+        <i class="fa-solid fa-xmark"></i>
+    </label>
 
     <!-- Sidebar / channel browser -->
     <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-40 w-[86vw] max-w-sm md:w-[360px] md:max-w-none h-full md:h-auto bg-slate-900 md:border-r border-slate-800 flex flex-col -translate-x-full md:translate-x-0 transition-transform duration-300 ease-out">
@@ -224,11 +240,30 @@ const HTML_UI = `
                 console.error('Shaka Player error:', event.detail);
             });
 
-            new shaka.ui.Overlay(
+            const ui = new shaka.ui.Overlay(
                 player,
                 document.querySelector('.shaka-video-container'),
                 video
             );
+
+            const controls = ui.getControls();
+
+            // Register custom aspect ratio button
+            controls.addButton('aspect', () => {
+                // Create button element
+                const button = document.createElement('button');
+                button.classList.add('shaka-aspect-button');
+                button.textContent = 'Aspect';
+
+                // Toggle aspect ratio on click
+                button.addEventListener('click', () => {
+                const container = document.querySelector('.shaka-video-container');
+                container.classList.toggle('aspect-16-9');
+                container.classList.toggle('aspect-fill');
+                });
+
+                return button;
+            });
         }
 
         async function fetchChannels() {
