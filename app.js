@@ -74,9 +74,9 @@ const HTML_UI = `
     <link rel="manifest" href="/site.webmanifest">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Encode+Sans+Condensed:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/shaka-player@4.15.5/dist/controls.css">
-    <script src="https://unpkg.com/shaka-player@4.15.5/dist/shaka-player.ui.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Encode+Sans+Condensed:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">    
+    <link rel="stylesheet" href="https://unpkg.com/shaka-player@5.2.11/dist/controls.css">
+    <script src="https://unpkg.com/shaka-player@5.2.11/dist/shaka-player.ui.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         :root { --player-aspect-ratio: 16 / 9; }
@@ -87,7 +87,10 @@ const HTML_UI = `
         .thin-scroll::-webkit-scrollbar { width: 6px; }
         .thin-scroll::-webkit-scrollbar-track { background: transparent; }
         .thin-scroll::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 999px; }
-        .shaka-video-container { aspect-ratio: var(--player-aspect-ratio, 16 / 9); }
+        .shaka-video-container { aspect-ratio: var(--player-aspect-ratio, 16 / 9); width: 100%; max-width: 100%; max-height: 100%; }
+        .shaka-video-container video { object-fit: contain; }
+        .shaka-aspect-select { max-width: 7rem; color: #fff; background: transparent; padding: 8px 1px; font: inherit; }
+        .shaka-aspect-select option { background: #1e293b; color: #fff; }
         #menu-toggle { display: none; }
         .menu-btn { position: fixed; top: 22px; right: 22px; z-index: 50; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background-color: rgba(30, 41, 59, 0.4); border-radius: 12px; cursor: pointer; transition: background-color 0.3s ease-in-out; opacity: 0.5; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);}
         .menu-btn:hover { background-color: rgba(51, 65, 85, 0.6); opacity: 1; }
@@ -98,9 +101,6 @@ const HTML_UI = `
         #menu-toggle:checked + .menu-btn .fa-xmark { transform: rotate(0deg); opacity: 0; }
         #menu-toggle:checked + .menu-btn .fa-bars { transform: rotate(0deg); opacity: 1; }
         @media (max-width: 768px) { #menu-toggle, .menu-btn { display: none; }}
-        .shaka-video-container.aspect-16-9 video { aspect-ratio: 16 / 9; width: 100%; height: auto; }
-        .shaka-video-container.aspect-fill video { width: 100%; height: 100%; object-fit: cover; }
-
     </style>
 </head>
 <body class="h-dvh w-full flex flex-col md:flex-row bg-slate-950 text-slate-50 overflow-hidden">
@@ -134,7 +134,7 @@ const HTML_UI = `
     <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-40 w-[86vw] max-w-sm md:w-[360px] md:max-w-none h-full md:h-auto bg-slate-900 md:border-r border-slate-800 flex flex-col -translate-x-full md:translate-x-0 transition-transform duration-300 ease-out">
         <div class="flex items-center justify-between px-5 pt-5 pb-4 border-b border-slate-800 flex-shrink-0 pt-[max(1.25rem,env(safe-area-inset-top))]">
             <h1 class="m-0 text-xl font-bold flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" class="text-blue-500 hidden md:block flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" class="text-blue-500  md:block flex-shrink-0">
                     <path fill="currentColor" d="M64 64C28.7 64 0 92.7 0 128L0 352c0 35.3 28.7 64 64 64l112 0-10.7 32L128 448c-17.7 0-32 14.3-32 32s14.3 32 32 32l256 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-37.3 0L336 416l112 0c35.3 0 64-28.7 64-64l0-224c0-35.3-28.7-64-64-64L64 64zm0 64l384 0 0 224L64 288l0-160z"/>
                 </svg>
                 <span>NIPTV Player</span>
@@ -202,16 +202,6 @@ const HTML_UI = `
                 <h2 id="npTitle" class="m-0 text-base md:text-xl font-bold truncate">Select a channel to play</h2>
                 <p id="npSchedule" class="m-0 text-xs md:text-sm text-slate-400 truncate">Live Stream</p>
             </div>
-            <label class="player-options hidden sm:flex items-center gap-2 text-xs text-slate-400 flex-shrink-0">
-                Aspect
-                <select id="aspectRatioSelect" class="aspect-select rounded-lg bg-slate-950 border border-slate-800 text-xs py-1.5 px-2 text-slate-200" aria-label="Player aspect ratio">
-                    <option value="16 / 9" selected>16:9</option>
-                    <option value="4 / 3">4:3</option>
-                    <option value="21 / 9">21:9</option>
-                    <option value="1 / 1">1:1</option>
-                    <option value="9 / 16">9:16</option>
-                </select>
-            </label>
         </div>
     </main>
 
@@ -226,7 +216,7 @@ const HTML_UI = `
         const pageSize = 50;
         const video = document.getElementById('video');
         const mobileMediaQuery = window.matchMedia('(max-width: 767px)');
-
+        
         async function initializePlayer() {
             shaka.polyfill.installAll();
 
@@ -248,24 +238,50 @@ const HTML_UI = `
 
             const controls = ui.getControls();
 
-            // Register custom aspect ratio button
-            controls.addButton('aspect', () => {
-                // Create button element
-                const button = document.createElement('button');
-                button.classList.add('shaka-aspect-button');
-                button.textContent = 'Aspect';
+            // Register the ratio selector as a native Shaka UI control.
+            class AspectRatioElement extends shaka.ui.Element {
+                constructor(parent, controls) {
+                    super(parent, controls);
+                    this.select = document.createElement('select');
+                    this.select.className = 'shaka-aspect-select';
+                    this.select.setAttribute('aria-label', 'Player aspect ratio');
+                    this.select.title = 'Aspect ratio';
+                    [
+                        ['16 / 9', '16:9'],
+                        ['4 / 3', '4:3'],
+                        ['21 / 9', '21:9'],
+                        ['1 / 1', '1:1'],
+                        ['9 / 16', '9:16']
+                    ].forEach(([ratio, label]) => {
+                        const option = document.createElement('option');
+                        option.value = ratio;
+                        option.textContent = label;
+                        this.select.appendChild(option);
+                    });
+                    this.eventManager.listen(this.select, 'change', () => setPlayerAspectRatio(this.select.value));
+                    this.parent.appendChild(this.select);
+                }
+            }
 
-                // Toggle aspect ratio on click
-                button.addEventListener('click', () => {
-                const container = document.querySelector('.shaka-video-container');
-                container.classList.toggle('aspect-16-9');
-                container.classList.toggle('aspect-fill');
-                });
+            shaka.ui.Controls.registerElement('aspect_ratio', new class {
+                create(parent, controls) {
+                    return new AspectRatioElement(parent, controls);
+                }
+            });
 
-                return button;
+            ui.configure({
+                controlPanelElements: [
+                    'play_pause',
+                    'time_and_duration',
+                    'mute',
+                    'volume',
+                    'spacer',
+                    'fullscreen',
+                    'aspect_ratio',
+                    'overflow_menu'
+                ]
             });
         }
-
         async function fetchChannels() {
             try {
                 const [playlistResponse, metadataResponse] = await Promise.all([
@@ -597,9 +613,6 @@ const HTML_UI = `
             renderChannels();
         });
         document.getElementById('resetButton').addEventListener('click', resetFilters);
-        document.getElementById('aspectRatioSelect').addEventListener('change', function(event) {
-            setPlayerAspectRatio(event.target.value);
-        });
         document.getElementById('previousPage').addEventListener('click', function() {
             if (currentPage > 1) {
                 currentPage--;
@@ -613,6 +626,8 @@ const HTML_UI = `
                 renderChannels();
             }
         });
+
+
 
         initializePlayer();
         fetchChannels();
