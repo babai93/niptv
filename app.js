@@ -2,7 +2,7 @@
  * Simple IPTV Web Player
  * A single-file Node.js app using Express and the public iptv-org M3U playlist.
  * node.exe D:\Automation\niptv\app.js -- 
- **/
+ */
 
 const express = require('express');
 const https = require('https');
