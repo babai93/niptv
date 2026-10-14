@@ -3,4 +3,7 @@
   publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "20"
+  NODE_VERSION = "22"
+  # This is a static site + Netlify Functions, not a Next.js app. The Next.js
+  # Runtime plugin is enabled in the Netlify UI and fails on non-Next.js output.
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"
