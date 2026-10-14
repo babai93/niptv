@@ -4,16 +4,19 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "dev": "node app.js",
-    "start": "node app.js",
-    "build": "echo 'No build step required' && exit 0",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "test": "echo \"Error: no test specified\" && exit 0"
   },
   "keywords": [],
   "type": "commonjs",
   "dependencies": {
     "@vercel/speed-insights": "^2.0.0",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "next": "^16.4.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
   },
   "devDependencies": {
     "@netlify/plugin-nextjs": "^5.16.2"
