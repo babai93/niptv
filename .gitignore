@@ -1,5 +1,8 @@
+# Dependencies (installed by npm during the build)
+node_modules
+
 # Local Netlify folder
 .netlify
 
 # Netlify build output
-dist
+/dist
