@@ -3,6 +3,4 @@
   publish = "dist"
 
 [build.environment]
-  # This is an Express/static site, not Next.js. The Next.js runtime plugin is
-  # enabled in the Netlify UI and fails the build, so skip it.
-  NETLIFY_NEXT_PLUGIN_SKIP = "true"
+  NODE_VERSION = "20"
