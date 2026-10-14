@@ -548,7 +548,7 @@ const HTML_UI = `
             npLogo.classList.remove('hidden');
             npLogo.onerror = function() {
                 this.onerror = null;
-                this.src = 'https://placehold.co/112x112/1e293b/64748b?text=Live\nTV';
+                this.src = 'https://placehold.co/112x112/1e293b/64748b?text=Live%0ATV';
             };
 
             if (mobileMediaQuery.matches) {
