@@ -641,9 +641,6 @@ app.get('/', (req, res) => {
     res.send(HTML_UI);
 });
 
-app.listen(PORT, () => {
-    console.log('NIPTV Player running at http://localhost:' + PORT);
-});
 
 app.get('/api/metadata', async (req, res) => {
     try {
@@ -658,3 +655,13 @@ app.get('/api/metadata', async (req, res) => {
         res.status(500).send('Error fetching channel metadata');
     }
 });
+
+// Start the server only when run directly (node app.js); the Netlify build
+// script requires this file just to read HTML_UI.
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log('NIPTV Player running at http://localhost:' + PORT);
+    });
+}
+
+module.exports = { HTML_UI };
